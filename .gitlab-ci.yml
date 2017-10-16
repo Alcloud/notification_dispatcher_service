@@ -1,0 +1,81 @@
+stages:
+  - build
+  - register
+  - integration
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+build:
+  stage: build
+  tags:
+    - docker
+# why this image url?
+  image: git.credential.eu:8010/playground/demo-build-environment:latest
+  script:
+    - pwd
+    - export
+    - mkdir -p $CI_PROJECT_DIR/.m2
+    - ls -lisa
+    - mvn -Dmaven.repo.local=$CI_PROJECT_DIR/.m2 clean compile package install -B -P dev
+  cache:
+    paths:
+      - target/notification_dispatcher_service.jar
+      - .m2
+#  when: manual
+  artifacts:
+    paths:
+    - target/notification_dispatcher_service.jar
+
+integration:
+  stage: integration
+  tags:
+    - docker
+  image: git.credential.eu:8010/thiemerf/integration-stage/image:latest
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN git.credential.eu:8010
+    - docker-compose --version
+#    - chmod +x ./delete.sh
+#    - ./delete.sh
+    - docker-compose -f /usr/docker/docker-compose.yml pull
+    - docker-compose -f /usr/docker/docker-compose.yml up -d
+  script:
+    - pwd
+    - export
+    - mkdir -p $CI_PROJECT_DIR/.m2
+    - ls -lisa
+    - mvn -Dmaven.repo.local=$CI_PROJECT_DIR/.m2 clean verify -B -P integration-test
+  after_script:
+    - docker-compose -f /usr/docker/docker-compose.yml stop
+
+register:
+  stage: register
+  tags:
+    - docker
+  image: docker:latest
+  before_script:
+    - pwd
+    - export
+    - echo $CI_BUILD_TOKEN | base64 -
+#    - 'curl --header "PRIVATE-TOKEN: xxxxxxxxxxxxxx" "https://gitlab.fokus.fraunhofer.de/api/v3/projects/$CI_PROJECT_ID/builds/artifacts/master/download?job=build" -o build.zip'
+#    - 'curl --header "PRIVATE-TOKEN: $CI_BUILD_TOKEN" "https://git.credential.eu/api/v4/projects/$CI_PROJECT_ID/jobs/artifacts/master/download?job=build"  -o build.zip'
+#    - unzip build.zip -d .
+    - ls -lisa /
+    - mkdir -p ./package/files/bin
+#    - touch ./package/files/bin/ci-demo.jar
+    - mv ./target/notification_dispatcher_service.jar ./package/files/bin
+    - ls -lisa
+  script:
+    - pwd
+    - cd package
+    - docker build -t $CI_REGISTRY_IMAGE/image .
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker push $CI_REGISTRY_IMAGE/image
+  cache:
+    paths:
+      - target/notification_dispatcher_service.jar
+#  only:
+#  - master
+#  when: manual
+
+    

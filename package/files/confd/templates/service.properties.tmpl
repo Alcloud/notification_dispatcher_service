@@ -1,0 +1,35 @@
+# generic properties
+consumers={{ getenv "consumers" }}
+
+# Mongo DB settings
+notificationpreferencedb.host={{ getenv "notification_preference_db_host" }}
+notificationpreferencedb.port={{ getenv "notification_preference_db_port" }}
+
+notificationdb.host={{ getenv "notification_db_host" }}
+notificationdb.port={{ getenv "notification_db_port" }}
+
+notificationmanagementservice.host={{ getenv "notification_mgmt_service_host" }}
+notificationmanagementservice.port={{ getenv "notification_mgmt_service_port" }}
+
+# kafka topics
+subscribetopic={{ getenv "subscribetopic" }}
+sendtopic={{ getenv "sendtopic" }}
+
+# kafka config related properties
+kafka.producer.bootstrap.servers={{ getenv "kafka_bootstrap_servers" }}
+kafka.consumer.bootstrap.servers={{ getenv "kafka_bootstrap_servers" }}
+kafka.consumer.group.id={{ getenv "kafka_group_id" }}
+kafka.consumer.enable.auto.commit=true
+kafka.consumer.auto.commit.interval.ms=1000
+kafka.consumer.auto.offset.reset=earliest
+kafka.producer.acks=all
+kafka.producer.retries=0
+kafka.producer.batch.size=16384
+kafka.consumer.auto.commit.interval.ms=1000
+kafka.producer.linger.ms=0
+kafka.producer.key.serializer=org.apache.kafka.common.serialization.StringSerializer
+kafka.producer.value.serializer=org.apache.kafka.common.serialization.ByteArraySerializer
+kafka.consumer.key.deserializer=org.apache.kafka.common.serialization.StringDeserializer
+kafka.consumer.value.deserializer=org.apache.kafka.common.serialization.ByteArrayDeserializer
+kafka.consumer.session.timeout.ms=30000
+kafka.consumer.block.on.buffer.full=false

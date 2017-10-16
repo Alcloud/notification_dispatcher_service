@@ -1,0 +1,17 @@
+[template]
+src = "service.properties.tmpl"
+dest = "/tmp/service.properties"
+keys = [
+    "server_port",
+    "kafka_advertised_host_name",
+    "consumers",
+    "kafka_group_id",
+    "notification_preference_db_host",
+    "notification_preference_db_port",
+    "notification_db_host",
+    "notification_db_port",
+    "notification_mgmt_service_host",
+    "notification_mgmt_service_port",
+    "subscribetopic",
+    "sendtopic"
+]

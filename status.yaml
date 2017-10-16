@@ -1,0 +1,145 @@
+swagger: '2.0'
+info:
+  title: Credential Service Status API
+  description: API for receiving status information about the service  
+  version: "0.0.1"
+  
+# the domain of the service
+host: services.credential.eu
+
+# array of all schemes that your API supports
+schemes:
+  - https
+  - http
+  
+# will be prefixed to all paths
+basePath: /v1
+produces:
+  - application/json
+paths:
+  
+  /status:
+    get:
+      summary: retrieve the status information about this service
+      description: the status information covers the uptime of the service, content of configuration files and connection information to database and other external services.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/StatusResponse"
+        400:
+          description: Unexpected error (a combination of codesystem/code is used to provide detailed reasons)
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: Internal System Error
+
+definitions:
+  
+  StatusResponse:
+    type: array
+    items:
+      $ref: "#/definitions/StatusResponseItem"
+      
+
+  StatusResponseItem:
+    type: object
+    description: "An status response item containing the status information for a particular status Type"
+    properties:
+        statusId: 
+          $ref: "#/definitions/Identifier"
+        statusType:
+          description: "The type of the status. I.e. Server uptime"
+          $ref: "#/definitions/Coding"
+        statusDetails:
+          type: array
+          description: "The details of the given status element which can be expressed for the given status type."
+          items:
+            $ref: "#/definitions/KeyValue"
+
+  Notification:
+      type: object
+      required:
+      - accountId
+      - notificationId
+      - notificationCreationTime
+      - notificationDetails
+      properties:
+        accountId:
+           $ref: "#/definitions/Identifier"
+        notificationId:
+          $ref: "#/definitions/Identifier"
+        notificationCreationTime:
+          type: string
+          format: date-time
+          description: time of notification creation
+        notificationDetails:
+          type: array
+          items:
+            $ref: "#/definitions/KeyValue"
+
+  Error:
+    type: object
+    description: detailed description of the error
+    required:
+    - errorType
+    properties:
+      errorType:
+        $ref: "#/definitions/Coding"
+      errorDetails:
+        type: array
+        items: 
+          $ref: "#/definitions/KeyValue"
+
+  KeyValue:
+    type: object
+    description: A value that is described by a specific coding
+    required:
+    - key
+    - value
+    properties:
+      key: 
+        $ref: "#/definitions/Coding"
+      value: 
+        type: string
+        format: string
+        description: value
+ 
+  Identifier:
+    type: object
+    description: An identifier intended for computation
+    required:
+    - value
+    properties:
+      type:
+        $ref: "#/definitions/Coding"
+      namespace: 
+        type: string
+        description: The namespace for the identifier value
+      value: 
+        type: string
+        description: The value that is unique
+        
+  Coding:
+    type: object
+    description: A reference to a code defined by a terminology system
+    required:
+    - system
+    - code
+    properties:
+      system: 
+        type: string
+        description: Identity of the terminology system
+      version: 
+        type: string
+        description: Version of the system - if relevant
+      code: 
+        type: string
+        description: Symbol in syntax defined by the system
+      display: 
+        type: string
+        description: Representation defined by the system

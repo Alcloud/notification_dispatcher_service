@@ -1,0 +1,12 @@
+.settings/org.eclipse.core.resources.prefs
+.settings/org.eclipse.jdt.core.prefs
+.settings/org.eclipse.m2e.core.prefs
+package/files/bin/notification-dispatcher-service.jar
+.classpath
+.project
+src/gen/java/eu/credential/config/schema/Coding.java
+src/gen/java/eu/credential/config/schema/FCMNotification.java
+src/gen/java/eu/credential/config/schema/Identifier.java
+src/gen/java/eu/credential/config/schema/KeyValue.java
+src/gen/java/eu/credential/config/schema/Notification.java
+src/gen/java/eu/credential/config/schema/NotificationEvent.java
